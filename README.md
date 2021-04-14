@@ -1,5 +1,8 @@
 # server
 
+## Prerequisites
+- node.js
+
 ## How to
 yarn init 후 루트 디렉토리에 .env 파일을 만들어 다음과 같이 작성 후 적절한 값 입력
 
@@ -12,3 +15,7 @@ GOOGLE_CSECRET=
 ```
 
 이 후 yarn start
+
+## TODO
+- RESTful 하게 하기
+- API docs

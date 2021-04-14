@@ -14,7 +14,7 @@ mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on('error', console.error);
 db.once("open", () => {
-    console.log(`mongodb with ${process.env.DB_USER} open`);
+    console.log(`mongodb of ${process.env.DB_USER} is open`);
 });
 
 app.use(express.json());
