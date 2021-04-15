@@ -1,8 +1,8 @@
-import Testmodel from "../models/testmodel"
+import testModel from "../models/testmodel"
 
 export default {
     async save(msg) {
-        var test = new Testmodel({
+        var test = new testModel({
             msg: msg
         });
         var res = await test.save();

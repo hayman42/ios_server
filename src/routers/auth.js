@@ -3,14 +3,12 @@ import authService from "../services/authservice";
 
 const app = express.Router();
 
-app.get("/register-google", async (req, res) => {
+app.get("/register/:type", async (req, res) => {
     try {
-        const registerDto = req.query;
-        var userInfo = await authService.register(registerDto.code, "google");
-        if (userInfo === null)
-            res.send("already exists")
-        else
-            res.send("ok");
+        const { code } = req.query;
+        const type = req.params.type;
+        var { status, data } = await authService.register(code, type);
+        res.status(status).json(data);
     } catch (e) {
         console.log(e);
         res.sendStatus(500);
