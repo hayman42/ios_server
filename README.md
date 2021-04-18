@@ -16,9 +16,10 @@ KAKAO_CID=<카카오 <Client ID>
 KAKAO_CSECRET=<카카오 <Client 암호>
 ```
 
+파일 업로드 위해 src/static 디렉토리 생성
+
 이 후 yarn start
 
 ## TODO
 - RESTful 하게 하기
-- API docs
 - 유닛 테스트 코드

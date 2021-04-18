@@ -1,0 +1,35 @@
+<h3>signin</h3>
+<form action="/api/v0/auth/signin" method="get">
+    <input name="email" placeholder="email">
+    <input name="name" placeholder="name">
+    <input name="location" placeholder="location">
+    <button type="submit" class="btn btn-primary">Sign in</button>
+</form>
+
+<h3>upload</h3>
+<form action="/api/v0/post/upload" enctype="multipart/form-data" method="post">
+    <input multiple="multiple" type="file" name="images">
+    <input type="hidden" name="token" value="dev">
+    <input type="hidden" name="email" value="hayman42@naver.com">
+    <input type="hidden" name="name" value="한재연">
+    <input type="hidden" name="title" value="hello">
+    <input type="hidden" name="content" value="post">
+    <input type="hidden" name="link" value="https://a.com">
+    <input type="hidden" name="participants" value="3">
+    <input type="hidden" name="price" value="123">
+    <input type="hidden" name="category" value="가구">
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>
+
+<h3>delete post</h3>
+<form action="/api/v0/post/delete" method="get">
+    <input name="token" placeholder="token">
+    <input name="postid" placeholder="postid">
+    <button type="submit" class="btn btn-primary">Delete</button>
+</form>
+
+<h3>quit</h3>
+<form action="/api/v0/auth/quit" method="get">
+    <input name="token" placeholder="token">
+    <button type="submit" class="btn btn-primary">Quit</button>
+</form>
