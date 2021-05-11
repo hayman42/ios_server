@@ -30,8 +30,8 @@ describe("authservice test", () => {
 
     });
 
-    afterAll(() => {
-        userModel.deleteMany({});
+    afterAll(async () => {
+        await userModel.deleteMany({});
         db.close();
     });;
 });

@@ -1,6 +1,7 @@
 import supertest from "supertest";
 import app from "../src/app";
 import mongoose from "mongoose";
+import userModel from "../src/models/usermodel";
 import qs from "querystring";
 import AuthService from "../src/services/authservice";
 
@@ -16,7 +17,7 @@ describe("signin test", () => {
         const type = "google";
         const userName = "jaeyeon";
         const query = qs.stringify({
-            code: "4/0AY0e-g4206Sgcc3Hdt_yCBDrKFhQxJw0c9g7tRxZQ7wtQWUyXVG1_qLRlzgl2skm9N8tzQ",
+            code: "4/0AY0e-g55Seie0i9rQW0nFskip8dgbrOwo_V9Ijc7epgjnjpCjG9r7nE2z_62iaKhFDlcDQ",
             name: userName
         });
         const res = await supertest(app).get(`/api/v0/auth/signin/${type}?` + query);
@@ -27,7 +28,8 @@ describe("signin test", () => {
         expect(name).toBe(userName);
     });
 
-    afterAll(() => {
+    afterAll(async () => {
+        await userModel.deleteMany({});
         db.close();
         app.close();
     });
