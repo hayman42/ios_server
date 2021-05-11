@@ -1,51 +1,65 @@
-import userModel from "../models/usermodel";
-import { v4 } from "uuid";
+import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
+import axios from "axios";
+import qs from "querystring";
 
-export default {
-    async signin(Dto) {
-        const { name, email, location } = Dto;
-        const userInfo = await userModel.findOne({ name: name, email: email }).exec();
-        if (userInfo !== null) {
-            return {
-                status: 200,
-                data: { token: userInfo.privateKey }
-            };
-        }
+dotenv.config();
 
-        const key = v4();
-        const user = new userModel({
-            name: name,
-            email: email,
-            location: location,
-            posts: [],
-            likes: [],
-            participated: [],
-            privateKey: key
-        });
-        await user.save();
-        return {
-            status: 200,
-            data: { token: key }
-        };
+const configs = {
+    "google": {
+        token_url: "https://oauth2.googleapis.com/token",
+        info_url: "https://www.googleapis.com/oauth2/v1/userinfo?alt=json",
+        cid: process.env.GOOGLE_CID,
+        csecret: process.env.GOOGLE_CSECRET
     },
-    async authenticate(name, email, token) {
-        const user = await userModel.findOne({ name: name, email: email }).exec();
-        if (token === "dev" || user && user.privateKey == token)
-            return user._id;
-        else
-            return null;
-    },
-    async quit(token) {
-        const result = await userModel.deleteOne({ privateKey: token });
-        if (token === "some_valid_token" || result.deletedCount)
-            return {
-                status: 200,
-                data: { msg: "delete success" }
-            };
-        else
-            return {
-                status: 400,
-                data: { msg: "invalid token" }
-            };
+    "kakao": {
+        token_url: "https://kauth.kakao.com/oauth/token",
+        info_url: "https://kapi.kakao.com/v2/user/me",
+        cid: process.env.KAKAO_CID,
+        csecret: process.env.KAKAO_CSECRET
     }
+};
+
+export default class AuthService {
+    async getToken(code, type) {
+        const config = configs[type];
+        return (await axios.post(config.token_url, qs.stringify({
+            code: code,
+            client_id: config.cid,
+            client_secret: config.csecret,
+            redirect_uri: `http://localhost:5000/api/v0/auth/register/${type}`,
+            grant_type: "authorization_code"
+        }))).data.access_token;
+    };
+
+    async getInfo(token, type) {
+        const config = configs[type];
+        let res = (await axios.get(config.info_url, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })).data;
+
+        if (type == "kakao") res = res.kakao_account;
+        return res;
+    };
+
+    generateToken(email, name) {
+        return jwt.sign({
+            email: email,
+            name: name
+        },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: '1h'
+            }
+        );
+    }
+
+    verifyToken(token, userEmail, userName) {
+        const { email, name } = jwt.verify(token, process.env.JWT_SECRET);
+        if (email != userEmail && name != userName)
+            throw new Error("INVALID_INFO");
+        return this.generateToken(email, name);
+    };
 };

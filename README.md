@@ -14,6 +14,7 @@ GOOGLE_CID=<구글 Client ID>
 GOOGLE_CSECRET=<구글 Client 암호>
 KAKAO_CID=<카카오 <Client ID>
 KAKAO_CSECRET=<카카오 <Client 암호>
+JWT_SECRET=<JWT 비밀키>
 ```
 
 파일 업로드 위해 src/static 디렉토리 생성

@@ -4,7 +4,7 @@ import postService from "../services/postservice";
 import multer from "multer";
 
 const app = express.Router();
-var storage = multer.diskStorage({
+let storage = multer.diskStorage({
     destination(req, file, cb) {
         const path = `src/static/`;
         cb(null, path);
@@ -13,7 +13,7 @@ var storage = multer.diskStorage({
         cb(null, `${Date.now()}_${file.originalname}`);
     }
 });
-var upload = multer({ storage: storage, limits: { fileSize: 5 * 1024 * 1024 } }).array("images");
+let upload = multer({ storage: storage, limits: { fileSize: 5 * 1024 * 1024 } }).array("images");
 
 app.post("/upload", async (req, res) => {
     upload(req, res, async (err) => {
@@ -21,14 +21,14 @@ app.post("/upload", async (req, res) => {
             if (err) throw new Error(err);
             const { name, email, token, ...postData } = req.body;
             const _id = await authService.authenticate(name, email, token);
-            if (_id === null) return res.status(401).json({ data: { msg: "unauthorized" } });
+            if (_id === null) return res.status(401).json({ msg: "unauthorized" });
 
             const { status, data } = await postService.upload(_id, postData, req.files);
             return res.status(status).json(data);
         } catch (e) {
             console.log(e);
             res.status(500).json({
-                data: { msg: "internal server error" }
+                msg: "internal server error"
             });
         }
     });
@@ -43,7 +43,7 @@ app.get("/delete", async (req, res) => {
     } catch (e) {
         console.log(e);
         res.status(500).json({
-            data: { msg: "internal server error" }
+            msg: "internal server error"
         });
     }
 });
