@@ -1,12 +1,18 @@
 import express from "express";
-import testRouter from "../routers/testrouter";
-import authRouter from "../routers/auth";
-import postRouter from "../routers/post";
+import testRouter from "../routes/testrouter.js";
+import authRouter from "../routes/auth.js";
+import postRouter from "../routes/post.js";
+import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export default app => {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
-    app.use("/api/v0/test", testRouter);
+    app.use(cookieParser());
+    app.use("/api/v0/static", express.static(process.env.ROOT_DIR + "/static"));
+    app.use("/test", testRouter);
     app.use("/api/v0/auth", authRouter);
     app.use("/api/v0/post", postRouter);
     app.get("/", (req, res) => {

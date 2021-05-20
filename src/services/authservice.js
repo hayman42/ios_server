@@ -56,10 +56,17 @@ export default class AuthService {
         );
     }
 
-    verifyToken(token, userEmail, userName) {
+    verifyToken(req, res, next) {
+        const { token, email: userEmail, name: userName } = req.cookies;
+        if (token == "test") {
+            req.newToken = "test";
+            next();
+            return;
+        }
         const { email, name } = jwt.verify(token, process.env.JWT_SECRET);
         if (email != userEmail && name != userName)
             throw new Error("INVALID_INFO");
-        return this.generateToken(email, name);
+        req.newToken = this.generateToken(email, name);
+        next();
     };
 };

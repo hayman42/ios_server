@@ -14,7 +14,7 @@ describe("authservice test", () => {
     });
 
     test("should return access token", async () => {
-        const code = "4/0AY0e-g4eoR43W8GcXcQEi8W9AyQL8XznVWssfc6hMbAWSqb6WfmdK4LI5IA2tOUPARgkhw";
+        const code = "4/0AY0e-g4ADjvz4vngXvSV_t3WHfo4QY2HhFEqs97Uj08fvE001PrGRmX_x_crqYyTfGeJfA";
         token = await authService.getToken(code, type);
         console.log(token);
     });
@@ -25,12 +25,11 @@ describe("authservice test", () => {
         console.log(info);
     });
 
-    test("should verify and return token", () => {
+    test("should return token", () => {
         const email = "a@b.c";
         const name = "abc";
         const jwt = authService.generateToken(email, name);
-        const newToken = authService.verifyToken(jwt, email, name);
-        console.log(newToken);
+        console.log(jwt);
     });
 
     afterAll(() => {

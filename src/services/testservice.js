@@ -1,4 +1,4 @@
-import testModel from "../models/testmodel"
+import testModel from "../models/testmodel.js"
 
 export default {
     async save(msg) {

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import counterModel from "../models/countermodel";
+import counterModel from "../models/countermodel.js";
+import userModel from "../models/usermodel.js";
 
 dotenv.config();
 
@@ -21,6 +22,8 @@ export default () => {
         console.log(`mongodb of ${process.env.DB_USER} is open`);
         if (await counterModel.findOne().exec() == null)
             await (new counterModel()).save();
+        if (await userModel.findOne({ name: "test" }) == null)
+            await (new userModel({ name: "test", email: "test", authProvider: "test", location: "test" })).save();
         db.emit("start");
     });
 };

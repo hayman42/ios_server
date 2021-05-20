@@ -4,13 +4,16 @@ import mongoose from "mongoose";
 import userModel from "../src/models/usermodel";
 
 const db = mongoose.connection;
-describe("authservice test", () => {
+describe("userservice test", () => {
     let userService;
+    const email = "some@email.com";
+    const name = "somename";
+    const type = "kakao";
+
     beforeAll(done => {
         userService = new UserService;
         dbLoader();
         db.on("start", async () => {
-            await userModel.deleteMany({});
             done();
         });
     });
@@ -20,18 +23,19 @@ describe("authservice test", () => {
     });
 
     test("should save an user", async () => {
-        const email = "some@email.com";
-        const name = "somename";
-        const type = "kakao";
         const { email: testEmail, name: testName, authProvider: testType } = await userService.checkAndCreate(email, name, type);
         expect(email).toBe(testEmail);
         expect(name).toBe(testName);
         expect(type).toBe(testType);
-
     });
 
+    test("should delete an user", async () => {
+        await userService.checkAndCreate(email, name, type);
+        await userService.quitUser(email, name);
+    })
+
     afterAll(async () => {
-        await userModel.deleteMany({});
+        await userModel.deleteOne({ name: name });
         db.close();
     });;
 });
