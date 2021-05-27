@@ -3,7 +3,6 @@ import AuthService from "../src/services/authservice";
 describe("authservice test", () => {
     let authService;
     const type = "google";
-    let token;
     beforeAll(done => {
         authService = new AuthService;
         done();
@@ -13,13 +12,8 @@ describe("authservice test", () => {
         expect(authService).toBeDefined();
     });
 
-    test("should return access token", async () => {
-        const code = "4/0AY0e-g4ADjvz4vngXvSV_t3WHfo4QY2HhFEqs97Uj08fvE001PrGRmX_x_crqYyTfGeJfA";
-        token = await authService.getToken(code, type);
-        console.log(token);
-    });
-
     test("should return info", async () => {
+        const token = "ya29.a0AfH6SMAbm2wOWlzQp6w0TKedtsjfBTikTpQ70pH462TNc4bFmiptxrzamdTQ_gg5G1qr5O8l9n-cZktTciPHSF3TfcRAj5q9yVifxZ2BZyWXuaftV1KkyqKQadWxE6__brexO_IqfE8qXqJarEgwqOLPqLVV";
         expect(token).toBeDefined();
         const info = await authService.getInfo(token, type);
         console.log(info);

@@ -5,10 +5,6 @@ export default class UserService {
         return new userModel(data);
     }
 
-    async delete(user) {
-        return await userModel.deleteOne({ _id: user._id });
-    }
-
     async checkAndCreate(email, name, type) {
         const checkExist = await userModel.findOne({ name: name });
         if (checkExist === null) {
@@ -28,5 +24,12 @@ export default class UserService {
         if (user == null)
             throw new Error("no such user");
         await user.deleteOne();
+    }
+
+    async getUserInfo(name) {
+        const user = await userModel.findOne({ name: name }).exec();
+        if (user == null)
+            throw new Error("no such user");
+        return user;
     }
 }

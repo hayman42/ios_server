@@ -1,5 +1,5 @@
-const a = {};
-const b = { x: 1, y: 2 };
+var a = [1, 2, 3, 4, 5];
 
-const { x, y } = a || b;
-console.log(x + y);
+a.splice(2, 1)
+
+console.log(a);

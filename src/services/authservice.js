@@ -21,6 +21,7 @@ const configs = {
 };
 
 export default class AuthService {
+    //for test
     async getToken(code, type) {
         const config = configs[type];
         return (await axios.post(config.token_url, qs.stringify({

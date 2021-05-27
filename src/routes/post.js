@@ -81,7 +81,8 @@ app.get("/delete", authService.verifyToken, async (req, res) => {
         postid = parseInt(postid);
         await postService.delete(postid, name);
         res.status(200)
-            .cookie("token", req.newToken);
+            .cookie("token", req.newToken)
+            .send();
     } catch (e) {
         console.log(e.message);
         res.status(500).json({ msg: "internal server error" });
@@ -130,8 +131,90 @@ app.get("/delete", authService.verifyToken, async (req, res) => {
  */
 app.get("/recent", authService.verifyToken, async (req, res) => {
     try {
-        const { num } = req.query;
+        let { num } = req.query;
         const posts = await postService.getRecentPosts(num);
+        res.status(200)
+            .cookie("token", req.newToken)
+            .json({ posts: posts });
+    } catch (e) {
+        console.log(e.message);
+        res.status(500).json({ msg: "internal server error" });
+    }
+});
+
+/**
+ * @swagger
+ *  /post/recent:
+ *    get:
+ *      summary: 특정 카테고리의 게시글을 가져오는 api
+ *      tags: [Post]
+ *      description: 게시글을 가져온다. 
+ *                   응답으로 게시글에 대한 정보가 있는데, 이 때 images 에는 게시글에 첨부된 이미지 파일의 이름이 있다.
+ *                   이를 이용하여 api를 통해 받아올 수 있다.
+ *      parameters:
+ *        - in: query
+ *          name: category
+ *          required: true
+ *          description: 검색할 게시글의 카테고리
+ *          schema:
+ *            type: string
+ *            example: food
+ *        - in: query
+ *          name: num
+ *          required: true
+ *          description: 받아올 최근 게시글의 게수
+ *          schema:
+ *            type: integer
+ *            example: 4
+ *      responses:
+ *       200:
+ *        description: 게시글 받아오기 성공
+ */
+app.get("/category", authService.verifyToken, async (req, res) => {
+    try {
+        let { category, num } = req.query;
+        const posts = await postService.getPostsByCategory(category, num);
+        res.status(200)
+            .cookie("token", req.newToken)
+            .json({ posts: posts });
+    } catch (e) {
+        console.log(e.message);
+        res.status(500).json({ msg: "internal server error" });
+    }
+});
+
+/**
+ * @swagger
+ *  /post/search:
+ *    get:
+ *      summary: 특정 검색어에 해당하는 게시글을 가져오는 api
+ *      tags: [Post]
+ *      description: 게시글을 가져온다. 
+ *                   응답으로 게시글에 대한 정보가 있는데, 이 때 images 에는 게시글에 첨부된 이미지 파일의 이름이 있다.
+ *                   이를 이용하여 api를 통해 받아올 수 있다.
+ *      parameters:
+ *        - in: query
+ *          name: word
+ *          required: true
+ *          description: 검색어
+ *          schema:
+ *            type: string
+ *            example: hello
+ *        - in: query
+ *          name: num
+ *          required: true
+ *          description: 받아올 최근 게시글의 게수
+ *          schema:
+ *            type: integer
+ *            example: 10
+ *      responses:
+ *       200:
+ *        description: 게시글 받아오기 성공
+ */
+app.get("/search", authService.verifyToken, async (req, res) => {
+    try {
+        let { word, num } = req.query;
+        const posts = await postService.searchPostsByWords(word, num);
         res.status(200)
             .cookie("token", req.newToken)
             .json({ posts: posts });

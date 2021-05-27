@@ -24,6 +24,7 @@ describe("userservice test", () => {
 
     test("should save an user", async () => {
         const { email: testEmail, name: testName, authProvider: testType } = await userService.checkAndCreate(email, name, type);
+
         expect(email).toBe(testEmail);
         expect(name).toBe(testName);
         expect(type).toBe(testType);
@@ -32,7 +33,16 @@ describe("userservice test", () => {
     test("should delete an user", async () => {
         await userService.checkAndCreate(email, name, type);
         await userService.quitUser(email, name);
-    })
+    });
+
+    test("should get userinfo", async () => {
+        await userService.checkAndCreate(email, name, type);
+        const user = await userService.getUserInfo(name);
+
+        expect(user.email).toBe(email);
+        expect(user.name).toBe(name);
+        expect(user.authProvider).toBe(type);
+    });
 
     afterAll(async () => {
         await userModel.deleteOne({ name: name });

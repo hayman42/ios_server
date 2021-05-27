@@ -9,14 +9,14 @@ export default class PostService {
     }
 
     async upload(author, postData, files) {
-        Object.keys(postData).map((key) => {
-            postData[key] = parseInt(postData[key]) || postData[key];
+        ["participants", "price"].forEach(key => {
+            postData[key] = parseInt(postData[key]);
         });
         const counter = await counterModel.findOneAndUpdate({ "$inc": { "postid": 1 } }).exec();
-        let user = await userModel.findOne({ name: author });
+        let user = await userModel.findOne({ name: author }).exec();
         postData.postid = counter.postid;
         postData.images = files.map((x) => x.path.split('\\')[1]);
-        postData.location = user.location;
+        // postData.location = user.location;
         postData.author = author;
 
         user.posts.push(postData.postid);
@@ -24,21 +24,56 @@ export default class PostService {
 
         const post = this.create(postData);
         await post.save();
-        await user.updateOne();
+        await user.save();
         return post;
     }
 
     async delete(postid, name) {
-        const post = await postModel.findOne({ postid: postid });
+        const post = await postModel.findOne({ postid: postid }).exec();
         if (post.author !== name)
             throw new Error("unauthorized");
+        const user = await userModel.findOne({ name: name }).exec();
 
         post.images.forEach(async (x) => { x || await fs.unlink(`${process.env.ROOT_DIR}/static/${x}`); });
+        const postIdx = user.posts.findIndex(x => x == post.postid);
+        const participatedIdx = user.participated.findIndex(x => x == post.postid);
+        user.posts.splice(postIdx, 1);
+        user.participated.splice(participatedIdx, 1);
+
+        await user.save();
         await post.deleteOne();
     }
 
     async getRecentPosts(num) {
-        const posts = await postModel.find({}).sort("postid");
+        num = parseInt(num);
+        const posts = await postModel.find({}).sort("updatedAt").limit(num).exec();
         return posts.slice(0, num);
+    }
+
+    async getPostsByCategory(category, num) {
+        num = parseInt(num);
+        const posts = await postModel.find({ category: category }).sort("updatedAt").limit(num).exec();
+        return posts;
+    }
+
+    async searchPostsByWords(str, num) {
+        num = parseInt(num);
+        const posts = await postModel.find({
+            $or: [
+                {
+                    title: {
+                        $regex: str,
+                        $options: "imxs"
+                    }
+                },
+                {
+                    content: {
+                        $regex: str,
+                        $options: "imxs"
+                    }
+                }
+            ]
+        }).sort("updatedAt").limit(num).exec();
+        return posts;
     }
 };

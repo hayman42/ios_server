@@ -15,9 +15,9 @@ describe("signin test", () => {
         db.on("start", () => done());
     });
 
-    test("should sign in and verify token", async () => {
+    test("should sign in", async () => {
         const query = qs.stringify({
-            code: "4/0AY0e-g76o5DNTKK3YD1rtH7V0pOidAtu1jGdTWRTDLJlzi0LVz2bQsLjCwRWQb5F5R1AWA",
+            access_token: "ya29.a0AfH6SMAbm2wOWlzQp6w0TKedtsjfBTikTpQ70pH462TNc4bFmiptxrzamdTQ_gg5G1qr5O8l9n-cZktTciPHSF3TfcRAj5q9yVifxZ2BZyWXuaftV1KkyqKQadWxE6__brexO_IqfE8qXqJarEgwqOLPqLVV",
             name: userName
         });
         const res = await supertest(app).get(`/api/v0/auth/signin/${type}?` + query);

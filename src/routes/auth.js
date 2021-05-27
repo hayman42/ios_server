@@ -7,7 +7,8 @@ const authService = new AuthService;
 const userService = new UserService;
 
 app.get("/register/:type", async (req, res) => {
-    res.send(req.query.code);
+    const access_token = await authService.getToken(req.query.code, req.params.type);
+    res.send(`code: ${req.query.code}\naccess_token: ${access_token}`);
 });
 
 /**
@@ -26,12 +27,12 @@ app.get("/register/:type", async (req, res) => {
  *            type: string
  *            example: google
  *        - in: query
- *          name: code
+ *          name: access_token
  *          required: true
- *          description: OAuth code
+ *          description: 로그인 서버에서 받은 엑세스 토큰
  *          schema:
  *            type: string
- *            example: code_string
+ *            example: token_string
  *        - in: query
  *          name: name
  *          required: true
@@ -46,10 +47,9 @@ app.get("/register/:type", async (req, res) => {
 app.get("/signin/:type", async (req, res) => {
     try {
         const type = req.params.type;
-        const { code, name } = req.query;
+        const { access_token, name } = req.query;
 
-        const accessToken = await authService.getToken(code, type);
-        const { email } = await authService.getInfo(accessToken, type);
+        const { email } = await authService.getInfo(access_token, type);
         await userService.checkAndCreate(email, name, type);
         const token = authService.generateToken(email, name);
         res.status(200)
@@ -57,33 +57,6 @@ app.get("/signin/:type", async (req, res) => {
             .cookie("email", email)
             .cookie("name", name)
             .send();
-    } catch (e) {
-        console.log(e.message);
-        res.status(500).json({
-            msg: "internal server error"
-        });
-    }
-});
-
-/**
- * @swagger
- *  /auth/quit:
- *    get:
- *      summary: 탈퇴 api
- *      tags: [Auth]
- *      description: 해당 유저의 정보를 db에서 삭제합니다.
- *      responses:
- *       200:
- *        description: 탈퇴 성공
- */
-app.get("/quit", authService.verifyToken, async (req, res) => {
-    try {
-        const { email, name } = req.cookies;
-
-        await userService.quitUser(email, name);
-        res.status(200).json({
-            msg: "delete"
-        });
     } catch (e) {
         console.log(e.message);
         res.status(500).json({

@@ -57,7 +57,8 @@ export default mongoose.model("posts", new mongoose.Schema({
     price: { type: Number, required: true },
     category: { type: String, required: true },
     images: { type: [String], required: true },
-    likes: { type: Number, default: 0, required: true, default: 0 }
+    likes: { type: Number, default: 0, required: true, default: 0 },
+    tags: { type: [String], required: true }
 }, {
     timestamps: true
 }));
