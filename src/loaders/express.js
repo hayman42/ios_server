@@ -23,7 +23,6 @@ export default app => {
 
         res.send(`<a href="${googleurl}">구글</a>
         <a href="${kakaourl}">카카오</a>`);
-        // res.sendFile(__dirname + "/resources/test.html");
     });
     return app;
 };

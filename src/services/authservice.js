@@ -45,10 +45,9 @@ export default class AuthService {
         return res;
     };
 
-    generateToken(email, name) {
+    generateToken(email) {
         return jwt.sign({
-            email: email,
-            name: name
+            email: email
         },
             process.env.JWT_SECRET,
             {
@@ -58,16 +57,13 @@ export default class AuthService {
     }
 
     verifyToken(req, res, next) {
-        const { token, email: userEmail, name: userName } = req.cookies;
-        if (token == "test") {
-            req.newToken = "test";
-            next();
-            return;
-        }
-        const { email, name } = jwt.verify(token, process.env.JWT_SECRET);
-        if (email != userEmail && name != userName)
+        if (process.env.JWT_SECRET == "test")
+            return next();
+        const { token, email: userEmail } = req.cookies;
+        const { email } = jwt.verify(token, process.env.JWT_SECRET);
+        if (email != userEmail)
             throw new Error("INVALID_INFO");
-        req.newToken = this.generateToken(email, name);
+        req.newToken = this.generateToken(email);
         next();
     };
 };

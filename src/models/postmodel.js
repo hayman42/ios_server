@@ -15,6 +15,8 @@ import mongoose from "mongoose";
 *                     - participants
 *                     - price
 *                     - category
+*                 optional:
+*                     - tags
 *                 properties:
 *                     author:
 *                         type: string
@@ -28,10 +30,13 @@ import mongoose from "mongoose";
 *                     link:
 *                         type: string
 *                         description: 공동구매 링크
-*                     location:
-*                         type: string
-*                         description: 공동구매 장소
-*                     participants:
+*                     longitude:
+*                         type: number
+*                         description:
+*                     latitude:
+*                         type: number
+*                         description:
+*                     needPeople:
 *                         type: integer
 *                         description: 희망 참여인원
 *                     price:
@@ -43,6 +48,9 @@ import mongoose from "mongoose";
 *                     images:
 *                         type: file
 *                         description: 첨부 이미지
+*                     tags:
+*                         type: list
+*                         description: 태그
 */
 export default mongoose.model("posts", new mongoose.Schema({
     postid: { type: Number, required: true, unique: true },
@@ -50,15 +58,16 @@ export default mongoose.model("posts", new mongoose.Schema({
     title: { type: String, required: true },
     content: { type: String, required: true },
     link: { type: String, required: true },
-    location: { type: String, required: true },
+    longitude: { type: Number },
+    latitude: { type: Number },
     view: { type: Number, required: true, default: 0 },
     nowPeople: { type: Number, required: true, default: 0 },
-    participants: { type: Number, required: true },
+    needPeople: { type: Number, required: true },
     price: { type: Number, required: true },
     category: { type: String, required: true },
     images: { type: [String], required: true },
     likes: { type: Number, default: 0, required: true, default: 0 },
-    tags: { type: [String], required: true }
+    tags: [String]
 }, {
     timestamps: true
 }));

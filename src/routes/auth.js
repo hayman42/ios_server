@@ -17,7 +17,7 @@ app.get("/register/:type", async (req, res) => {
  *    get:
  *      summary: 로그인 api
  *      tags: [Auth]
- *      description: OAuth 결과에 따라 신규 유저의 경우 db에 정보를 저장한 후 토큰을 발급합니다.
+ *      description: OAuth 결과에 따라 신규 유저의 경우 db에 정보를 저장합니다. 이 후 인증 토큰을 발급합니다.
  *      parameters:
  *        - in: path
  *          name: type
@@ -50,17 +50,20 @@ app.get("/signin/:type", async (req, res) => {
         const { access_token, name } = req.query;
 
         const { email } = await authService.getInfo(access_token, type);
-        await userService.checkAndCreate(email, name, type);
-        const token = authService.generateToken(email, name);
+        const { isNew, user } = await userService.checkAndCreate(email, name, type);
+        const token = authService.generateToken(email);
         res.status(200)
             .cookie("token", token)
             .cookie("email", email)
-            .cookie("name", name)
+            .json({
+                isNew,
+                user
+            })
             .send();
     } catch (e) {
         console.log(e.message);
         res.status(500).json({
-            msg: "internal server error"
+            msg: e.message
         });
     }
 });

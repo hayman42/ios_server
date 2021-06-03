@@ -10,8 +10,7 @@ function createPostData() {
         title: v4(),
         content: v4(),
         link: v4(),
-        location: v4(),
-        participants: 3,
+        needPeople: 3,
         price: 4,
         category: v4()
     };
@@ -19,7 +18,7 @@ function createPostData() {
 
 const db = mongoose.connection;
 describe("test postservice", () => {
-    const name = "test";
+    const nickname = "test";
     let postService;
     beforeAll(done => {
         dbLoader();
@@ -36,23 +35,22 @@ describe("test postservice", () => {
         const postData = {};
         const keys = Object.keys(reqData);
         keys.forEach(key => postData[key] = reqData[key]);
-        const post = await postService.upload(name, postData, []);
+        const post = await postService.upload(nickname, postData, []);
 
         keys.forEach(key => expect(post[key]).toBe(reqData[key]));
     });
 
     test("should delete a post", async () => {
         const postData = createPostData();
-        await postService.upload(name, postData, []);
+        await postService.upload(nickname, postData, []);
 
-        const user = await userModel.findOne({ name: name }).exec();
+        const user = await userModel.findOne({ nickname: nickname }).exec();
         const postid = user.posts[user.posts.length - 1];
-        await postService.delete(postid, name);
-        const newUser = await userModel.findOne({ name: name }).exec();
+        await postService.delete(postid, nickname);
+        const newUser = await userModel.findOne({ nickname: nickname }).exec();
 
         expect(await postModel.findOne({ postid: postid }).exec()).toBe(null);
         expect(user.posts.length).toBe(newUser.posts.length + 1);
-        expect(user.participated.length).toBe(newUser.participated.length + 1);
 
     });
 
@@ -60,7 +58,7 @@ describe("test postservice", () => {
         await Promise.all(
             [...Array(10)].map(async () => {
                 const postData = createPostData();
-                await postService.upload(name, postData, []);
+                await postService.upload(nickname, postData, []);
             })
         );
         const posts = await postService.getRecentPosts(10);
@@ -77,14 +75,14 @@ describe("test postservice", () => {
         await Promise.all(
             [...Array(6)].map(async () => {
                 let postData = createPostData();
-                await postService.upload(name, postData, []);
+                await postService.upload(nickname, postData, []);
             })
         );
         await Promise.all(
             [...Array(4)].map(async () => {
                 let postData = createPostData();
                 postData.category = category;
-                await postService.upload(name, postData, []);
+                await postService.upload(nickname, postData, []);
             })
         );
         const posts = await postService.getPostsByCategory(category, 10);
@@ -99,14 +97,14 @@ describe("test postservice", () => {
             [...Array(6)].map(async () => {
                 let postData = createPostData();
                 postData.title = postData.title + word;
-                await postService.upload(name, postData, []);
+                await postService.upload(nickname, postData, []);
             })
         );
         await Promise.all(
             [...Array(4)].map(async () => {
                 let postData = createPostData();
                 postData.content = postData.content + word;
-                await postService.upload(name, postData, []);
+                await postService.upload(nickname, postData, []);
             })
         );
         const posts = await postService.searchPostsByWords(word, 10);
@@ -115,10 +113,21 @@ describe("test postservice", () => {
         posts.forEach(post => expect(post.title.includes(word) || post.content.includes(word)).toBe(true));
     });
 
+    test("should search posts by author", async () => {
+        await Promise.all(
+            [...Array(10)].map(async () => {
+                let postData = createPostData();
+                await postService.upload(nickname, postData, []);
+            })
+        );
+        const posts = await postService.getPostsByAuthor(nickname, 10);
+        expect(posts.length).toBe(10);
+        posts.forEach(post => expect(post.author).toBe(nickname));
+    });
+
     afterEach(async () => {
-        await postModel.deleteMany({ author: name }).exec();
-        const user = await userModel.findOne({ name: name }).exec();
-        user.participated = [];
+        await postModel.deleteMany({ author: nickname }).exec();
+        const user = await userModel.findOne({ nickname: nickname }).exec();
         user.posts = [];
         await user.save();
     });

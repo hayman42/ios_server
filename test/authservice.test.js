@@ -21,8 +21,7 @@ describe("authservice test", () => {
 
     test("should return token", () => {
         const email = "a@b.c";
-        const name = "abc";
-        const jwt = authService.generateToken(email, name);
+        const jwt = authService.generateToken(email);
         console.log(jwt);
     });
 

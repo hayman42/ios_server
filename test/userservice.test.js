@@ -23,7 +23,8 @@ describe("userservice test", () => {
     });
 
     test("should save an user", async () => {
-        const { email: testEmail, name: testName, authProvider: testType } = await userService.checkAndCreate(email, name, type);
+        const { user } = await userService.checkAndCreate(email, name, type);
+        const { email: testEmail, name: testName, authProvider: testType } = user;
 
         expect(email).toBe(testEmail);
         expect(name).toBe(testName);
@@ -32,20 +33,31 @@ describe("userservice test", () => {
 
     test("should delete an user", async () => {
         await userService.checkAndCreate(email, name, type);
-        await userService.quitUser(email, name);
+        await userService.quitUser(email);
     });
 
     test("should get userinfo", async () => {
         await userService.checkAndCreate(email, name, type);
-        const user = await userService.getUserInfo(name);
+        const user = await userService.getUserInfo(email);
 
         expect(user.email).toBe(email);
         expect(user.name).toBe(name);
         expect(user.authProvider).toBe(type);
     });
 
+    test("should update location info", async () => {
+        let updateInfo = {
+            longitude: "3.312",
+            latitude: "3.11"
+        };
+        const user = await userService.updateUserInfo("test", updateInfo);
+
+        expect(user.longitude).toBe(parseFloat(updateInfo.longitude));
+        expect(user.latitude).toBe(parseFloat(updateInfo.latitude));
+    });
+
     afterAll(async () => {
-        await userModel.deleteOne({ name: name });
+        await userModel.deleteOne({ email: email });
         db.close();
     });;
 });

@@ -51,7 +51,7 @@ app.post("/upload", authService.verifyToken, upload, async (req, res) => {
             .json({ post: post, });
     } catch (e) {
         console.log(e.message);
-        res.status(500).json({ msg: "internal server error" });
+        res.status(500).json({ msg: e.message });
     }
 });
 
@@ -77,15 +77,15 @@ app.post("/upload", authService.verifyToken, upload, async (req, res) => {
 app.get("/delete", authService.verifyToken, async (req, res) => {
     try {
         let { postid } = req.query;
-        const { name } = req.cookies;
+        const { email } = req.cookies;
         postid = parseInt(postid);
-        await postService.delete(postid, name);
+        await postService.delete(postid, email);
         res.status(200)
             .cookie("token", req.newToken)
             .send();
     } catch (e) {
         console.log(e.message);
-        res.status(500).json({ msg: "internal server error" });
+        res.status(500).json({ msg: e.message });
     }
 });
 
@@ -138,13 +138,13 @@ app.get("/recent", authService.verifyToken, async (req, res) => {
             .json({ posts: posts });
     } catch (e) {
         console.log(e.message);
-        res.status(500).json({ msg: "internal server error" });
+        res.status(500).json({ msg: e.message });
     }
 });
 
 /**
  * @swagger
- *  /post/recent:
+ *  /post/category:
  *    get:
  *      summary: 특정 카테고리의 게시글을 가져오는 api
  *      tags: [Post]
@@ -179,7 +179,7 @@ app.get("/category", authService.verifyToken, async (req, res) => {
             .json({ posts: posts });
     } catch (e) {
         console.log(e.message);
-        res.status(500).json({ msg: "internal server error" });
+        res.status(500).json({ msg: e.message });
     }
 });
 
@@ -220,7 +220,48 @@ app.get("/search", authService.verifyToken, async (req, res) => {
             .json({ posts: posts });
     } catch (e) {
         console.log(e.message);
-        res.status(500).json({ msg: "internal server error" });
+        res.status(500).json({ msg: e.message });
+    }
+});
+
+/**
+ * @swagger
+ *  /post/author:
+ *    get:
+ *      summary: 특정 글쓴이의 게시글을 가져오는 api
+ *      tags: [Post]
+ *      description: 게시글을 가져온다. 
+ *                   응답으로 게시글에 대한 정보가 있는데, 이 때 images 에는 게시글에 첨부된 이미지 파일의 이름이 있다.
+ *                   이를 이용하여 api를 통해 받아올 수 있다.
+ *      parameters:
+ *        - in: query
+ *          name: author
+ *          required: true
+ *          description: 검색할 글쓴이의 이름
+ *          schema:
+ *            type: string
+ *            example: hayman42
+ *        - in: query
+ *          name: num
+ *          required: true
+ *          description: 받아올 최근 게시글의 게수
+ *          schema:
+ *            type: integer
+ *            example: 4
+ *      responses:
+ *       200:
+ *        description: 게시글 받아오기 성공
+ */
+app.get("/author", authService.verifyToken, async (req, res) => {
+    try {
+        let { author, num } = req.query;
+        const posts = await postService.getPostsByAuthor(author, num);
+        res.status(200)
+            .cookie("token", req.newToken)
+            .json({ posts: posts });
+    } catch (e) {
+        console.log(e.message);
+        res.status(500).json({ msg: e.message });
     }
 });
 

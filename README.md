@@ -17,11 +17,16 @@ KAKAO_CSECRET=<카카오 <Client 암호> *optional
 JWT_SECRET=<JWT 비밀키>
 ```
 
-파일 업로드 위해 루트 디렉토리에 static 디렉토리 생성
+optional 표시가 된 변수는 설정하실 필요가 없습니다.
 
-이 후 yarn start
+JWT_SECRET=test 로 할 경우 인증 과정 없이 api 가 실행 됩니다.
+
+이미지 파일 업로드 위해 루트 디렉토리에 static 디렉토리 생성
+
+yarn start 로 서버 시작
 
 yarn jest <원하는 테스트 파일 이름> 으로 테스트 코드를 실행 할 수 있습니다. 다만 서비스 유닛테스트가 아니라면 실패할 수 있습니다.
+
 ## TODO
 - RESTful 하게 하기
 - 유닛 테스트 코드
