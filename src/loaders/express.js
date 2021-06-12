@@ -18,7 +18,7 @@ export default app => {
     app.use("/api/v0/auth", authRouter);
     app.use("/api/v0/post", postRouter);
     app.use("/api/v0/user", userRouter);
-    app.use("/api/v0/apn", userRouter);
+    app.use("/api/v0/apn", apnRouter);
     app.get("/", (req, res) => {
         var googleurl = `https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/userinfo.email&access_type=offline&include_granted_scopes=true&response_type=code&redirect_uri=http://localhost:5000/api/v0/auth/register/google&client_id=${process.env.GOOGLE_CID}`;
         var kakaourl = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.KAKAO_CID}&redirect_uri=http://localhost:5000/api/v0/auth/register/kakao&response_type=code`;

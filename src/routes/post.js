@@ -1,7 +1,7 @@
 import express from "express";
-import AuthService from "../services/authservice.js";
-import PostService from "../services/postservice.js";
-// import UserService from "../services/userservice.js";
+import AuthService from "../services/authservice";
+import PostService from "../services/postservice";
+// import UserService from "../services/userservice";
 import multer from "multer";
 
 let storage = multer.diskStorage({
