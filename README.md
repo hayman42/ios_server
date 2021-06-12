@@ -15,11 +15,14 @@ GOOGLE_CSECRET=<구글 Client 암호> *optional
 KAKAO_CID=<카카오 <Client ID> *optional
 KAKAO_CSECRET=<카카오 <Client 암호> *optional
 JWT_SECRET=<JWT 비밀키>
+APN_KEY_DIR=<APN 인증키 절대 경로>
+APN_KEY_ID=<APN Key ID>
+APN_TEAM_ID=<APN Team ID>
 ```
 
 optional 표시가 된 변수는 설정하실 필요가 없습니다.
 
-JWT_SECRET=test 로 할 경우 인증 과정 없이 api 가 실행 됩니다.
+JWT_SECRET=test 로 할 경우 인증 과정 없이 api 가 실행되고 apn 서비스가 테스트 모드로 작동합ㄴ디ㅏ.
 
 이미지 파일 업로드 위해 루트 디렉토리에 static 디렉토리 생성
 

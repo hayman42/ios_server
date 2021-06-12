@@ -42,6 +42,18 @@ export default class PostService {
         await post.deleteOne();
     }
 
+    async likePost(postid, email) {
+        const post = await postModel.findOne({ postid: postid }).exec();
+        const user = await userModel.findOne({ email: email }).exec();
+        if (postid in user.likes)
+            throw new Error("already liked");
+        post.likes += 1;
+        user.likes.append(postid);
+
+        await user.save();
+        await post.save();
+    }
+
     async getRecentPosts(num) {
         num = parseInt(num);
         const posts = await postModel.find({}).sort("updatedAt").limit(num).exec();

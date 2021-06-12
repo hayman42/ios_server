@@ -265,4 +265,17 @@ app.get("/author", authService.verifyToken, async (req, res) => {
     }
 });
 
+app.get("/like", authService.verifyToken, async (req, res) => {
+    try {
+        let { postid } = req.query;
+        let { email } = req.cookies;
+        await postService.likePost(postid, email);
+        res.status(200)
+            .cookie("token", req.newToken);
+    } catch (e) {
+        console.log(e.message);
+        res.status(500).json({ msg: e.message });
+    }
+});
+
 export default app;

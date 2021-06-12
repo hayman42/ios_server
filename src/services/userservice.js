@@ -5,21 +5,24 @@ export default class UserService {
         return new userModel(data);
     }
 
-    async checkAndCreate(email, name, type) {
+    async checkAndCreate(email, name, type, device_token) {
         const checkExist = await userModel.findOne({ email: email });
         if (checkExist === null) {
-            let user = this.create({ email: email, name: name, authProvider: type });
+            let user = this.create({ email: email, name: name, authProvider: type, deviceToken: device_token });
             user.nickname = user._id;
             await user.save();
             return { isNew: true, user: user };
         }
         else if (checkExist.authProvider !== type)
             throw new Error(`email exists at ${checkExist.authProvider}`);
+
+        checkExist.deviceToken = device_token;
+        await checkExist.save();
         return { isNew: false, user: checkExist };
     }
 
     async quitUser(email) {
-        const user = await userModel.findOne({ email: email });
+        const user = await userModel.findOne({ email: email }).exec();
         if (user == null)
             throw new Error("no such user");
         await user.deleteOne();

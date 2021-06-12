@@ -11,7 +11,7 @@ import mongoose from "mongoose";
 *                     - title
 *                     - content
 *                     - link
-*                     - location
+*                     - needPeople
 *                     - participants
 *                     - price
 *                     - category
@@ -32,10 +32,10 @@ import mongoose from "mongoose";
 *                         description: 공동구매 링크
 *                     longitude:
 *                         type: number
-*                         description:
+*                         description: 구매 위치 정보(경도)
 *                     latitude:
 *                         type: number
-*                         description:
+*                         description: 구매 위치 정보(위도)
 *                     needPeople:
 *                         type: integer
 *                         description: 희망 참여인원
@@ -66,7 +66,7 @@ export default mongoose.model("posts", new mongoose.Schema({
     price: { type: Number, required: true },
     category: { type: String, required: true },
     images: { type: [String], required: true },
-    likes: { type: Number, default: 0, required: true, default: 0 },
+    likes: { type: Number, required: true, default: 0 },
     tags: [String]
 }, {
     timestamps: true

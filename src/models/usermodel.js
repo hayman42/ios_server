@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 *                 required:
 *                     - email
 *                     - name
+*                     - nickname
 *                     - authProvider
 *                     - isSeller
 *                     - recentHistory
@@ -20,6 +21,7 @@ import mongoose from "mongoose";
 *                     - following
 *                     - posts
 *                     - likes
+*                     - deviceToken
 *                 properties:
 *                     email:
 *                         type: string
@@ -27,6 +29,9 @@ import mongoose from "mongoose";
 *                     name:
 *                         type: string
 *                         description: 유저 이름
+*                     nickname:
+*                         type: string
+*                         description: 유저 닉네임
 *                     authProvider:
 *                         type: string
 *                         description: 소셜 로그인 경로
@@ -44,10 +49,10 @@ import mongoose from "mongoose";
 *                         description: 프로필 이미지 주소
 *                     longitude:
 *                         type: number
-*                         description:
+*                         description: 유저 위치 정보(경도)
 *                     latitude:
 *                         type: number
-*                         description:
+*                         description: 유저 위치 정보(위도)
 *                     followers:
 *                         type: list
 *                         description: 팔로워 리스트
@@ -60,6 +65,9 @@ import mongoose from "mongoose";
 *                     likes:
 *                         type: list
 *                         description: 좋아요 한 게시글 리스트
+*                     deviceToken:
+*                         type: string
+*                         description: 디바이스 토큰
 */
 export default mongoose.model("users", new mongoose.Schema({
     email: { type: String, required: true, unique: true },
@@ -69,13 +77,14 @@ export default mongoose.model("users", new mongoose.Schema({
     isSeller: { type: Boolean, default: false },
     recentHistory: [String],
     chatroomList: [Number],
-    profileImageUrl: { type: String },
-    longitude: { type: Number },
-    latitude: { type: Number },
+    profileImageUrl: { type: String, default: "" },
+    longitude: { type: Number, default: -1 },
+    latitude: { type: Number, default: -1 },
     followers: [String],
     following: [String],
     posts: [Number],
-    likes: [Number]
+    likes: [Number],
+    deviceToken: { type: String, default: "" }
 }, {
     timestamps: true
 }));

@@ -125,6 +125,8 @@ describe("test postservice", () => {
         posts.forEach(post => expect(post.author).toBe(nickname));
     });
 
+    test("should like posts", async () => { });
+
     afterEach(async () => {
         await postModel.deleteMany({ author: nickname }).exec();
         const user = await userModel.findOne({ nickname: nickname }).exec();

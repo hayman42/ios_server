@@ -1,8 +1,9 @@
 import express from "express";
-import testRouter from "../routes/testrouter.js";
-import authRouter from "../routes/auth.js";
-import postRouter from "../routes/post.js";
-import userRouter from "../routes/user.js";
+import testRouter from "../routes/testrouter";
+import authRouter from "../routes/auth";
+import postRouter from "../routes/post";
+import userRouter from "../routes/user";
+import apnRouter from "../routes/apn";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 
@@ -17,6 +18,7 @@ export default app => {
     app.use("/api/v0/auth", authRouter);
     app.use("/api/v0/post", postRouter);
     app.use("/api/v0/user", userRouter);
+    app.use("/api/v0/apn", userRouter);
     app.get("/", (req, res) => {
         var googleurl = `https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/userinfo.email&access_type=offline&include_granted_scopes=true&response_type=code&redirect_uri=http://localhost:5000/api/v0/auth/register/google&client_id=${process.env.GOOGLE_CID}`;
         var kakaourl = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.KAKAO_CID}&redirect_uri=http://localhost:5000/api/v0/auth/register/kakao&response_type=code`;

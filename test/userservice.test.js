@@ -9,6 +9,7 @@ describe("userservice test", () => {
     const email = "some@email.com";
     const name = "somename";
     const type = "kakao";
+    const dtoken = "device1";
 
     beforeAll(done => {
         userService = new UserService;
@@ -23,12 +24,13 @@ describe("userservice test", () => {
     });
 
     test("should save an user", async () => {
-        const { user } = await userService.checkAndCreate(email, name, type);
-        const { email: testEmail, name: testName, authProvider: testType } = user;
+        const { user } = await userService.checkAndCreate(email, name, type, dtoken);
+        const { email: testEmail, name: testName, authProvider: testType, deviceToken } = user;
 
         expect(email).toBe(testEmail);
         expect(name).toBe(testName);
         expect(type).toBe(testType);
+        expect(deviceToken).toBe(dtoken);
     });
 
     test("should delete an user", async () => {

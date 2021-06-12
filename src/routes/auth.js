@@ -40,6 +40,13 @@ app.get("/register/:type", async (req, res) => {
  *          schema:
  *            type: string
  *            example: 한재연
+ *        - in: query
+ *          name: device_token
+ *          required: true
+ *          description: 디바이스 토큰
+ *          schema:
+ *            type: string
+ *            example: device_token_string
  *      responses:
  *       200:
  *        description: 로그인 성공
@@ -47,10 +54,10 @@ app.get("/register/:type", async (req, res) => {
 app.get("/signin/:type", async (req, res) => {
     try {
         const type = req.params.type;
-        const { access_token, name } = req.query;
+        const { access_token, name, device_token = "" } = req.query;
 
         const { email } = await authService.getInfo(access_token, type);
-        const { isNew, user } = await userService.checkAndCreate(email, name, type);
+        const { isNew, user } = await userService.checkAndCreate(email, name, type, device_token);
         const token = authService.generateToken(email);
         res.status(200)
             .cookie("token", token)
