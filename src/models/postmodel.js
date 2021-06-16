@@ -12,15 +12,15 @@ import mongoose from "mongoose";
 *                     - content
 *                     - link
 *                     - needPeople
-*                     - participants
 *                     - price
 *                     - category
-*                 optional:
-*                     - tags
 *                 properties:
 *                     author:
 *                         type: string
 *                         description: 작성자
+*                     email:
+*                         type: string
+*                         description: 작성자 이메일
 *                     title:
 *                         type: string
 *                         description: 글 제목
@@ -55,6 +55,7 @@ import mongoose from "mongoose";
 export default mongoose.model("posts", new mongoose.Schema({
     postid: { type: Number, required: true, unique: true },
     author: { type: String, required: true },
+    email: { type: String, required: true },
     title: { type: String, required: true },
     content: { type: String, required: true },
     link: { type: String, required: true },

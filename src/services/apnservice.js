@@ -1,8 +1,5 @@
 import apn from "apn";
-import dotenv from "dotenv";
 import userModel from "../models/usermodel";
-
-dotenv.config();
 
 let option = {
     token: {

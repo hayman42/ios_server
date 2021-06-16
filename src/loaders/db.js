@@ -1,9 +1,6 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import counterModel from "../models/countermodel.js";
 import userModel from "../models/usermodel.js";
-
-dotenv.config();
 
 export default () => {
     const url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@hayman42.hvgn1.mongodb.net/mydb?authSource=admin&replicaSet=atlas-149rdz-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true`;

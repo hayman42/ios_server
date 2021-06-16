@@ -18,7 +18,8 @@ function createPostData() {
 
 const db = mongoose.connection;
 describe("test postservice", () => {
-    const nickname = "test";
+    const nickname = "test2";
+    const email = "test2";
     let postService;
     beforeAll(done => {
         dbLoader();
@@ -125,12 +126,20 @@ describe("test postservice", () => {
         posts.forEach(post => expect(post.author).toBe(nickname));
     });
 
-    test("should like posts", async () => { });
+    test("should like posts", async () => {
+        let postData = createPostData();
+        const post = await postService.upload(nickname, postData, []);
+        await postService.likePost(post.postid, email);
+
+        const updatedPost = await postModel.findOne({ postid: post.postid });
+        expect(updatedPost.likes).toBe(1);
+    });
 
     afterEach(async () => {
         await postModel.deleteMany({ author: nickname }).exec();
         const user = await userModel.findOne({ nickname: nickname }).exec();
         user.posts = [];
+        user.likes = [];
         await user.save();
     });
 

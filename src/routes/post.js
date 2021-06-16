@@ -1,7 +1,6 @@
 import express from "express";
 import AuthService from "../services/authservice";
 import PostService from "../services/postservice";
-// import UserService from "../services/userservice";
 import multer from "multer";
 
 let storage = multer.diskStorage({
@@ -28,6 +27,7 @@ const app = express.Router();
  *  /post/upload:
  *    post:
  *      summary: 게시글 업로드 api. 작성자 정보를 요청에 추가하면 보안문제 있으므로 배포 때 변경 필요.
+ *               이미지 크기는 5mb로 제한
  *      tags: [Post]
  *      description: 게시글을 업로드하고 이미지를 저장합니다.
  *      
@@ -82,7 +82,7 @@ app.get("/delete", authService.verifyToken, async (req, res) => {
         await postService.delete(postid, email);
         res.status(200)
             .cookie("token", req.newToken)
-            .send();
+            .json({ msg: "delete" });
     } catch (e) {
         console.log(e.message);
         res.status(500).json({ msg: e.message });
@@ -265,6 +265,25 @@ app.get("/author", authService.verifyToken, async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ *  /post/like:
+ *    get:
+ *      summary: 게시글 좋아요 api
+ *      tags: [Post]
+ *      description: 게시글 좋아요를 1 늘리고 유저의 좋아요 목록에 해당 게시글 추가
+ *      parameters:
+ *        - in: query
+ *          name: postid
+ *          required: true
+ *          description: 좋아요 할 게시글의 번호
+ *          schema:
+ *            type: integer
+ *            example: 4
+ *      responses:
+ *       200:
+ *        description: 성공
+ */
 app.get("/like", authService.verifyToken, async (req, res) => {
     try {
         let { postid } = req.query;

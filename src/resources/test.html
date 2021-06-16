@@ -1,39 +1,46 @@
-<h3>signin</h3>
-<form action="/api/v0/auth/signin" method="get">
+<h3>create user</h3>
+<form action="/test/create" method="get">
     <input name="email" placeholder="email">
     <input name="name" placeholder="name">
-    <input name="location" placeholder="location">
-    <button type="submit" class="btn btn-primary">Sign in</button>
+    <input name="type" placeholder="authProvider">
+    <input name="dtoken" placeholder="deviceToken">
+    <button type="submit" class="btn btn-primary">Create</button>
 </form>
 
-<h3>upload</h3>
+<h3>user info</h3>
+<form action="/api/v0/user/info" method="get">
+    <input name="email" placeholder="email" id="email" onkeyup="setcookie()">
+    <button type="submit" class="btn btn-primary">Info</button>
+</form>
+
+<h3>upload post with image</h3>
 <form action="/api/v0/post/upload" enctype="multipart/form-data" method="post">
     <input multiple="multiple" type="file" name="images">
-    <input type="hidden" name="token" value="dev">
-    <input type="hidden" name="email" value="hayman42@naver.com">
-    <input type="hidden" name="author" value="test">
-    <input type="hidden" name="title" value="hello">
-    <input type="hidden" name="content" value="post">
-    <input type="hidden" name="link" value="https://a.com">
-    <input type="hidden" name="participants" value="3">
-    <input type="hidden" name="price" value="123">
-    <input type="hidden" name="category" value="가구">
+    <input name="author" placeholder="author">
+    <input name="title" placeholder="title">
+    <input name="content" placeholder="content">
+    <input name="link" placeholder="link">
+    <input name="needPeople" placeholder="needPeople">
+    <input name="price" placeholder="price">
+    <input name="category" placeholder="category">
     <button type="submit" class="btn btn-primary">Upload</button>
 </form>
 
 <h3>delete post</h3>
 <form action="/api/v0/post/delete" method="get">
-    <input name="token" placeholder="token">
     <input name="postid" placeholder="postid">
+    <input name="email" placeholder="email" id="email" onkeyup="setcookie()">
     <button type="submit" class="btn btn-primary">Delete</button>
 </form>
 
-<h3>quit</h3>
+<!-- <h3>quit</h3>
 <form action="/api/v0/auth/quit" method="get">
-    <input name="token" placeholder="token">
     <button type="submit" class="btn btn-primary">Quit</button>
-</form>
+</form> -->
 
 <script>
     document.cookie = "token=test";
+    function setcookie() {
+        document.cookie = `email=${document.getElementById("email").value}`;
+    }
 </script>

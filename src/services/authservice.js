@@ -1,9 +1,6 @@
-import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import axios from "axios";
 import qs from "querystring";
-
-dotenv.config();
 
 const configs = {
     "google": {
@@ -57,8 +54,10 @@ export default class AuthService {
     }
 
     verifyToken(req, res, next) {
-        if (process.env.JWT_SECRET == "test")
+        if (process.env.JWT_SECRET == "test") {
+            req.newToken = "test";
             return next();
+        }
         const { token, email: userEmail } = req.cookies;
         const { email } = jwt.verify(token, process.env.JWT_SECRET);
         if (email != userEmail)

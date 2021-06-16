@@ -15,10 +15,11 @@ export default class PostService {
         const counter = await counterModel.findOneAndUpdate({ "$inc": { "postid": 1 } }).exec();
         let user = await userModel.findOne({ nickname: author }).exec();
         postData.postid = counter.postid;
-        postData.images = files.map((x) => x.path.split('\\')[1]);
-        // postData.longitude = user.longitude;
-        // postData.latitude = user.latitude;
+        postData.images = files.map(x => x.filename);
+        postData.longitude = user.longitude;
+        postData.latitude = user.latitude;
         postData.author = author;
+        postData.email = user.email;
 
         user.posts.push(postData.postid);
 
@@ -28,15 +29,23 @@ export default class PostService {
         return post;
     }
 
-    async delete(postid, nickname) {
+    async delete(postid, email) {
         const post = await postModel.findOne({ postid: postid }).exec();
-        if (post.author !== nickname)
+        if (post.email !== email)
             throw new Error("unauthorized");
-        const user = await userModel.findOne({ nickname: nickname }).exec();
+        const user = await userModel.findOne({ email: email }).exec();
 
-        post.images.forEach(async (x) => { x || await fs.unlink(`${process.env.ROOT_DIR}/static/${x}`); });
+        await Promise.all(post.images.map(async (x) => {
+            try {
+                await fs.unlink(`${process.env.ROOT_DIR}/static/${x}`);
+            } catch (e) {
+                console.log(e.message);
+            }
+        }));
         const postIdx = user.posts.findIndex(x => x == post.postid);
+        const likeIdx = user.likes.findIndex(x => x == post.postid);
         user.posts.splice(postIdx, 1);
+        likeIdx == -1 || user.likes.splice(likeIdx, 1);
 
         await user.save();
         await post.deleteOne();
@@ -48,7 +57,7 @@ export default class PostService {
         if (postid in user.likes)
             throw new Error("already liked");
         post.likes += 1;
-        user.likes.append(postid);
+        user.likes.push(postid);
 
         await user.save();
         await post.save();
@@ -89,7 +98,8 @@ export default class PostService {
 
     async getPostsByAuthor(author, num) {
         num = parseInt(num);
-        const posts = await postModel.find({ author: author })
+        const user = await userModel.findOne({ nickname: author }).exec();
+        const posts = await postModel.find({ email: user?.email })
             .sort("updatedAt").limit(num).exec();
         return posts;
     }

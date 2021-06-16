@@ -29,6 +29,6 @@
     "uuid": "^8.3.2"
   },
   "scripts": {
-    "start": "nodemon src/app.js --exec babel-node"
+    "start": "nodemon -r dotenv/config src/app.js --exec babel-node"
   }
 }
