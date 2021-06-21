@@ -1,3 +1,10 @@
+<script>
+    document.cookie = "token=test";
+    function setcookie(id) {
+        document.cookie = `email=${document.getElementsById(id).value}`;
+    }
+</script>
+
 <h3>create user</h3>
 <form action="/test/create" method="get">
     <input name="email" placeholder="email">
@@ -9,7 +16,7 @@
 
 <h3>user info</h3>
 <form action="/api/v0/user/info" method="get">
-    <input name="email" placeholder="email" id="email" onkeyup="setcookie()">
+    <input name="email" placeholder="email" id="1" onkeyup="setcookie('1')">
     <button type="submit" class="btn btn-primary">Info</button>
 </form>
 
@@ -29,7 +36,7 @@
 <h3>delete post</h3>
 <form action="/api/v0/post/delete" method="get">
     <input name="postid" placeholder="postid">
-    <input name="email" placeholder="email" id="email" onkeyup="setcookie()">
+    <input name="email" placeholder="email" id="2" onkeyup="setcookie('2')">
     <button type="submit" class="btn btn-primary">Delete</button>
 </form>
 
@@ -37,10 +44,3 @@
 <form action="/api/v0/auth/quit" method="get">
     <button type="submit" class="btn btn-primary">Quit</button>
 </form> -->
-
-<script>
-    document.cookie = "token=test";
-    function setcookie() {
-        document.cookie = `email=${document.getElementById("email").value}`;
-    }
-</script>

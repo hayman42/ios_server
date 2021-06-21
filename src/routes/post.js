@@ -1,21 +1,8 @@
 import express from "express";
 import AuthService from "../services/authservice";
 import PostService from "../services/postservice";
-import multer from "multer";
-
-let storage = multer.diskStorage({
-    fileFilter: (req, file, cb) => {
-
-    },
-    destination(req, file, cb) {
-        const path = `static/`;
-        cb(null, path);
-    },
-    filename(req, file, cb) {
-        cb(null, `${Date.now()}_${file.originalname}`);
-    }
-});
-let upload = multer({ storage: storage, limits: { fileSize: 5 * 1024 * 1024 } }).array("images");
+import upload from "../middlewares/upload";
+import authenticate from "../middlewares/authenticate";
 
 const postService = new PostService;
 const authService = new AuthService;
@@ -42,7 +29,7 @@ const app = express.Router();
  *       200:
  *        description: 업로드 성공
  */
-app.post("/upload", authService.verifyToken, upload, async (req, res) => {
+app.post("/upload", authenticate, upload, async (req, res) => {
     try {
         const { author, ...postData } = req.body;
         const post = await postService.upload(author, postData, req.files);
@@ -74,7 +61,7 @@ app.post("/upload", authService.verifyToken, upload, async (req, res) => {
  *       200:
  *        description: 게시글 삭제 성공
  */
-app.get("/delete", authService.verifyToken, async (req, res) => {
+app.get("/delete", authenticate, async (req, res) => {
     try {
         let { postid } = req.query;
         const { email } = req.cookies;
@@ -129,7 +116,7 @@ app.get("/delete", authService.verifyToken, async (req, res) => {
  *       200:
  *        description: 파일 받기 성공
  */
-app.get("/recent", authService.verifyToken, async (req, res) => {
+app.get("/recent", authenticate, async (req, res) => {
     try {
         let { num } = req.query;
         const posts = await postService.getRecentPosts(num);
@@ -170,7 +157,7 @@ app.get("/recent", authService.verifyToken, async (req, res) => {
  *       200:
  *        description: 게시글 받아오기 성공
  */
-app.get("/category", authService.verifyToken, async (req, res) => {
+app.get("/category", authenticate, async (req, res) => {
     try {
         let { category, num } = req.query;
         const posts = await postService.getPostsByCategory(category, num);
@@ -211,7 +198,7 @@ app.get("/category", authService.verifyToken, async (req, res) => {
  *       200:
  *        description: 게시글 받아오기 성공
  */
-app.get("/search", authService.verifyToken, async (req, res) => {
+app.get("/search", authenticate, async (req, res) => {
     try {
         let { word, num } = req.query;
         const posts = await postService.searchPostsByWords(word, num);
@@ -252,7 +239,7 @@ app.get("/search", authService.verifyToken, async (req, res) => {
  *       200:
  *        description: 게시글 받아오기 성공
  */
-app.get("/author", authService.verifyToken, async (req, res) => {
+app.get("/author", authenticate, async (req, res) => {
     try {
         let { author, num } = req.query;
         const posts = await postService.getPostsByAuthor(author, num);
@@ -284,7 +271,7 @@ app.get("/author", authService.verifyToken, async (req, res) => {
  *       200:
  *        description: 성공
  */
-app.get("/like", authService.verifyToken, async (req, res) => {
+app.get("/like", authenticate, async (req, res) => {
     try {
         let { postid } = req.query;
         let { email } = req.cookies;

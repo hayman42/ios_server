@@ -9,24 +9,32 @@ export default class PostService {
     }
 
     async upload(author, postData, files) {
-        ["participants", "price"].forEach(key => {
-            postData[key] = parseInt(postData[key]);
-        });
-        const counter = await counterModel.findOneAndUpdate({ "$inc": { "postid": 1 } }).exec();
-        let user = await userModel.findOne({ nickname: author }).exec();
-        postData.postid = counter.postid;
-        postData.images = files.map(x => x.filename);
-        postData.longitude = user.longitude;
-        postData.latitude = user.latitude;
-        postData.author = author;
-        postData.email = user.email;
+        try {
+            ["participants", "price"].forEach(key => {
+                postData[key] = parseInt(postData[key]);
+            });
+            const counter = await counterModel.findOneAndUpdate({ "$inc": { "postid": 1 } }).exec();
+            let user = await userModel.findOne({ nickname: author }).exec();
+            postData.postid = counter.postid;
+            postData.images = files.map(x => x.filename);
+            postData.longitude = user.longitude;
+            postData.latitude = user.latitude;
+            postData.author = author;
+            postData.email = user.email;
+            postData.profileImg = files.find(x => x.originalname === postData.profileImg)?.filename;
 
-        user.posts.push(postData.postid);
+            user.posts.push(postData.postid);
 
-        const post = this.create(postData);
-        await post.save();
-        await user.save();
-        return post;
+            const post = this.create(postData);
+            await post.save();
+            await user.save();
+            return post;
+        } catch (e) {
+            await Promise.all(files.map(async (x) => {
+                await fs.unlink(`${process.env.ROOT_DIR}/static/${x.filename}`);
+            }));
+            throw new Error(e.message);
+        }
     }
 
     async delete(postid, email) {

@@ -1,9 +1,8 @@
 import express from "express";
-import AuthService from "../services/authservice";
 import ApnService from "../services/apnservice";
+import authenticate from "../middlewares/authenticate";
 
 const app = express.Router();
-const authService = new AuthService;
 const apnService = new ApnService;
 
 /**
@@ -33,7 +32,7 @@ const apnService = new ApnService;
  *       200:
  *        description: 푸쉬 알림 요청 성공
  */
-app.post("/push", authService.verifyToken, async (req, res) => {
+app.post("/push", authenticate, async (req, res) => {
     try {
         const { message, nickname } = req.body;
         const result = await apnService.sendPush(message, nickname);

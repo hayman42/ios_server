@@ -1,7 +1,6 @@
 import express from "express";
 import AuthService from "../services/authservice";
 import UserService from "../services/userservice";
-
 const app = express.Router();
 const authService = new AuthService;
 const userService = new UserService;

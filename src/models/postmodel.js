@@ -51,6 +51,9 @@ import mongoose from "mongoose";
 *                     tags:
 *                         type: list
 *                         description: 태그
+*                     profileImg:
+*                         type: string
+*                         description: 대표이미지 파일명
 */
 export default mongoose.model("posts", new mongoose.Schema({
     postid: { type: Number, required: true, unique: true },
@@ -68,7 +71,8 @@ export default mongoose.model("posts", new mongoose.Schema({
     category: { type: String, required: true },
     images: { type: [String], required: true },
     likes: { type: Number, required: true, default: 0 },
-    tags: [String]
+    tags: [String],
+    profileImg: { type: String, default: null }
 }, {
     timestamps: true
 }));

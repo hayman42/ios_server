@@ -110,7 +110,7 @@ describe("test postservice", () => {
         );
         const posts = await postService.searchPostsByWords(word, 10);
 
-        expect(posts.length).toBe(4);
+        expect(posts.length).toBe(10);
         posts.forEach(post => expect(post.title.includes(word) || post.content.includes(word)).toBe(true));
     });
 

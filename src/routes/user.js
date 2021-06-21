@@ -1,9 +1,8 @@
 import express from "express";
-import AuthService from "../services/authservice";
 import UserService from "../services/userservice";
+import authenticate from "../middlewares/authenticate";
 
 const app = express.Router();
-const authService = new AuthService;
 const userService = new UserService;
 
 /**
@@ -17,7 +16,7 @@ const userService = new UserService;
  *       200:
  *        description: 탈퇴 성공
  */
-app.get("/quit", authService.verifyToken, async (req, res) => {
+app.get("/quit", authenticate, async (req, res) => {
     try {
         const { email } = req.cookies;
 
@@ -44,7 +43,7 @@ app.get("/quit", authService.verifyToken, async (req, res) => {
  *       200:
  *        description: 성공
  */
-app.get("/info", authService.verifyToken, async (req, res) => {
+app.get("/info", authenticate, async (req, res) => {
     try {
         let { email } = req.cookies;
         const user = await userService.getUserInfo(email);
@@ -87,7 +86,7 @@ app.get("/info", authService.verifyToken, async (req, res) => {
  *       200:
  *        description: 성공
  */
-app.get("/update", authService.verifyToken, async (req, res) => {
+app.get("/update", authenticate, async (req, res) => {
     try {
         let { email } = req.cookies;
         let updateInfo = req.query;
