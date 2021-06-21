@@ -38,8 +38,8 @@ app.post("/push", authService.verifyToken, async (req, res) => {
         const { message, nickname } = req.body;
         const result = await apnService.sendPush(message, nickname);
         res.status(200)
-            .cookie("token", req.newToken).
-            json({ result });
+            .cookie("token", req.newToken)
+            .json({ result });
     } catch (e) {
         console.log(e.message);
         res.send({

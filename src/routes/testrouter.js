@@ -17,7 +17,7 @@ app.get("/create", async (req, res) => {
 });
 
 app.get("/", async (req, res) => {
-    console.log(req.query);
+    console.log(req.header);
 });
 
 export default app;
