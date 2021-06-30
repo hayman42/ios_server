@@ -62,7 +62,7 @@ describe("test postservice", () => {
                 await postService.upload(nickname, postData, []);
             })
         );
-        const posts = await postService.getRecentPosts(10);
+        const posts = await postService.getRecentPosts(-1, 10);
 
         expect(posts.length).toBe(10);
         for (const i of posts.keys()) {
@@ -86,7 +86,7 @@ describe("test postservice", () => {
                 await postService.upload(nickname, postData, []);
             })
         );
-        const posts = await postService.getPostsByCategory(category, 10);
+        const posts = await postService.getPostsByCategory(category, -1, 10);
 
         expect(posts.length).toBe(4);
         posts.forEach(post => expect(post.category).toBe(category));
@@ -108,7 +108,7 @@ describe("test postservice", () => {
                 await postService.upload(nickname, postData, []);
             })
         );
-        const posts = await postService.searchPostsByWords(word, 10);
+        const posts = await postService.searchPostsByWords(word, -1, 10);
 
         expect(posts.length).toBe(10);
         posts.forEach(post => expect(post.title.includes(word) || post.content.includes(word)).toBe(true));
@@ -121,7 +121,7 @@ describe("test postservice", () => {
                 await postService.upload(nickname, postData, []);
             })
         );
-        const posts = await postService.getPostsByAuthor(nickname, 10);
+        const posts = await postService.getPostsByAuthor(nickname, -1, 10);
         expect(posts.length).toBe(10);
         posts.forEach(post => expect(post.author).toBe(nickname));
     });
@@ -134,6 +134,33 @@ describe("test postservice", () => {
         const updatedPost = await postModel.findOne({ postid: post.postid });
         expect(updatedPost.likes).toBe(1);
     });
+
+    test("should search posts by filter", async () => {
+        let [min_price, max_price] = [3, 10];
+        await Promise.all(
+            [...Array(3)].map(async () => {
+                let postData = createPostData();
+                postData.price = min_price - 1;
+                await postService.upload(nickname, postData, []);
+            })
+        );
+        await Promise.all(
+            [...Array(3)].map(async () => {
+                let postData = createPostData();
+                postData.price = parseInt((min_price + max_price) / 2);
+                await postService.upload(nickname, postData, []);
+            }));
+        await Promise.all(
+            [...Array(3)].map(async () => {
+                let postData = createPostData();
+                postData.price = max_price + 1;
+                await postService.upload(nickname, postData, []);
+            })
+        );
+
+        const posts = await postService.getPostsByFilter(email, -1, 10, min_price, max_price, 0, 10000, "likes");
+        posts.forEach(post => expect(min_price <= post.price && post.price <= max_price).toBe(true));
+    })
 
     afterEach(async () => {
         await postModel.deleteMany({ author: nickname }).exec();

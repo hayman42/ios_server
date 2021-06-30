@@ -19,8 +19,6 @@ export default () => {
         console.log(`mongodb of ${process.env.DB_USER} is open`);
         if (await counterModel.findOne().exec() == null)
             await (new counterModel()).save();
-        if (await userModel.findOne({ name: "test" }) == null)
-            await (new userModel({ name: "test", email: "test", authProvider: "test", location: "test" })).save();
         db.emit("start");
     });
 };

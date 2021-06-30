@@ -5,7 +5,6 @@ import upload from "../middlewares/upload";
 import authenticate from "../middlewares/authenticate";
 
 const postService = new PostService;
-const authService = new AuthService;
 
 const app = express.Router();
 
@@ -82,10 +81,17 @@ app.get("/delete", authenticate, async (req, res) => {
  *    get:
  *      summary: 최근 게시글을 가져오는 api
  *      tags: [Post]
- *      description: 게시글을 가져온다. 
+ *      description: 시작 게시글에서부터 num개의 게시글을 가져온다. 시작 게시글을 포함하지 않는다.
  *                   응답으로 게시글에 대한 정보가 있는데, 이 때 images 에는 게시글에 첨부된 이미지 파일의 이름이 있다.
  *                   이를 이용하여 api를 통해 받아올 수 있다.
  *      parameters:
+ *        - in: query
+ *          name: start
+ *          required: true
+ *          description: 시작 게시글 id. 처음부터 받아올 경우 -1
+ *          schema:
+ *            type: integer
+ *            example: -1
  *        - in: query
  *          name: num
  *          required: true
@@ -118,11 +124,11 @@ app.get("/delete", authenticate, async (req, res) => {
  */
 app.get("/recent", authenticate, async (req, res) => {
     try {
-        let { num } = req.query;
-        const posts = await postService.getRecentPosts(num);
+        let { start, num } = req.query;
+        const posts = await postService.getRecentPosts(start, num);
         res.status(200)
             .cookie("token", req.newToken)
-            .json({ posts: posts });
+            .json({ posts });
     } catch (e) {
         console.log(e.message);
         res.status(500).json({ msg: e.message });
@@ -139,6 +145,13 @@ app.get("/recent", authenticate, async (req, res) => {
  *                   응답으로 게시글에 대한 정보가 있는데, 이 때 images 에는 게시글에 첨부된 이미지 파일의 이름이 있다.
  *                   이를 이용하여 api를 통해 받아올 수 있다.
  *      parameters:
+ *        - in: query
+ *          name: start
+ *          required: true
+ *          description: 시작 게시글 id. 처음부터 받아올 경우 -1
+ *          schema:
+ *            type: integer
+ *            example: -1
  *        - in: query
  *          name: category
  *          required: true
@@ -159,11 +172,11 @@ app.get("/recent", authenticate, async (req, res) => {
  */
 app.get("/category", authenticate, async (req, res) => {
     try {
-        let { category, num } = req.query;
-        const posts = await postService.getPostsByCategory(category, num);
+        let { category, start, num } = req.query;
+        const posts = await postService.getPostsByCategory(category, start, num);
         res.status(200)
             .cookie("token", req.newToken)
-            .json({ posts: posts });
+            .json({ posts });
     } catch (e) {
         console.log(e.message);
         res.status(500).json({ msg: e.message });
@@ -180,6 +193,13 @@ app.get("/category", authenticate, async (req, res) => {
  *                   응답으로 게시글에 대한 정보가 있는데, 이 때 images 에는 게시글에 첨부된 이미지 파일의 이름이 있다.
  *                   이를 이용하여 api를 통해 받아올 수 있다.
  *      parameters:
+ *        - in: query
+ *          name: start
+ *          required: true
+ *          description: 시작 게시글 id. 처음부터 받아올 경우 -1
+ *          schema:
+ *            type: integer
+ *            example: -1
  *        - in: query
  *          name: word
  *          required: true
@@ -200,11 +220,11 @@ app.get("/category", authenticate, async (req, res) => {
  */
 app.get("/search", authenticate, async (req, res) => {
     try {
-        let { word, num } = req.query;
-        const posts = await postService.searchPostsByWords(word, num);
+        let { word, start, num } = req.query;
+        const posts = await postService.searchPostsByWords(word, start, num);
         res.status(200)
             .cookie("token", req.newToken)
-            .json({ posts: posts });
+            .json({ posts });
     } catch (e) {
         console.log(e.message);
         res.status(500).json({ msg: e.message });
@@ -221,6 +241,13 @@ app.get("/search", authenticate, async (req, res) => {
  *                   응답으로 게시글에 대한 정보가 있는데, 이 때 images 에는 게시글에 첨부된 이미지 파일의 이름이 있다.
  *                   이를 이용하여 api를 통해 받아올 수 있다.
  *      parameters:
+ *        - in: query
+ *          name: start
+ *          required: true
+ *          description: 시작 게시글 id. 처음부터 받아올 경우 -1
+ *          schema:
+ *            type: integer
+ *            example: -1
  *        - in: query
  *          name: author
  *          required: true
@@ -241,11 +268,80 @@ app.get("/search", authenticate, async (req, res) => {
  */
 app.get("/author", authenticate, async (req, res) => {
     try {
-        let { author, num } = req.query;
-        const posts = await postService.getPostsByAuthor(author, num);
+        let { author, start, num } = req.query;
+        const posts = await postService.getPostsByAuthor(author, start, num);
         res.status(200)
             .cookie("token", req.newToken)
-            .json({ posts: posts });
+            .json({ posts });
+    } catch (e) {
+        console.log(e.message);
+        res.status(500).json({ msg: e.message });
+    }
+});
+
+/**
+ * @swagger
+ *  /post/filter:
+ *    get:
+ *      summary: 필터로 게시글 받아오기
+ *      tags: [Post]
+ *      description: 게시글 필터
+ *      parameters:
+ *        - in: query
+ *          name: start
+ *          required: true
+ *          description: 시작 게시글 id. 처음부터 받아올 경우 -1
+ *          schema:
+ *            type: integer
+ *        - in: query
+ *          name: num
+ *          required: true
+ *          description: 받아올 최근 게시글의 게수
+ *          schema:
+ *            type: integer
+ *        - in: query
+ *          name: min_price
+ *          required: true
+ *          description: 최소 가격
+ *          schema:
+ *            type: integer
+ *        - in: query
+ *          name: max_price
+ *          required: true
+ *          description: 최대 가격
+ *          schema:
+ *            type: integer
+ *        - in: query
+ *          name: min_dist
+ *          required: true
+ *          description: 최소 거리
+ *          schema:
+ *            type: integer
+ *        - in: query
+ *          name: max_dist
+ *          required: true
+ *          description: 최대 거리
+ *          schema:
+ *            type: integer
+ *        - in: query
+ *          name: sortby
+ *          required: true
+ *          description: 조회순일 경우 "view", 최신순일 경우 "postid", 좋아요순일 경우 "likes".
+ *          schema:
+ *            type: integer
+ *      responses:
+ *       200:
+ *        description: 성공
+ */
+app.get("/filter", authenticate, async (req, res) => {
+    try {
+        let { start, num, min_price, max_price, min_dist, max_dist, sortby } = req.query;
+        const { email } = req.cookies;
+        const posts = await postService.getPostsByFilter(
+            email, start, num, min_price, max_price, min_dist, max_dist, sortby);
+        res.status(200)
+            .cookie("token", req.newToken)
+            .json({ posts });
     } catch (e) {
         console.log(e.message);
         res.status(500).json({ msg: e.message });
@@ -283,5 +379,7 @@ app.get("/like", authenticate, async (req, res) => {
         res.status(500).json({ msg: e.message });
     }
 });
+
+
 
 export default app;

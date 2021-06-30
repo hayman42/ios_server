@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import pointSchema from "./pointSchema";
 
 /** 
 * @swagger
@@ -12,11 +13,8 @@ import mongoose from "mongoose";
 *                     - nickname
 *                     - authProvider
 *                     - isSeller
-*                     - recentHistory
 *                     - chatroomList
-*                     - profileImageUrl
-*                     - longitude
-*                     - latitude
+*                     - profileImg
 *                     - followers
 *                     - following
 *                     - posts
@@ -38,21 +36,12 @@ import mongoose from "mongoose";
 *                     isSeller:
 *                         type: bool
 *                         description: 판매자인지 확인하는 값
-*                     recentHistory:
-*                         type: list
-*                         description: 최근 검색어
 *                     chatroomList:
 *                         type: list
 *                         description: 참가 채팅방 리스트
-*                     profileImageUrl:
+*                     profileImg:
 *                         type: string
 *                         description: 프로필 이미지 주소
-*                     longitude:
-*                         type: number
-*                         description: 유저 위치 정보(경도)
-*                     latitude:
-*                         type: number
-*                         description: 유저 위치 정보(위도)
 *                     followers:
 *                         type: list
 *                         description: 팔로워 리스트
@@ -68,6 +57,9 @@ import mongoose from "mongoose";
 *                     deviceToken:
 *                         type: string
 *                         description: 디바이스 토큰
+*                     location:
+*                         type: GeoJSON Point
+*                         description: 위치 정보
 */
 export default mongoose.model("users", new mongoose.Schema({
     email: { type: String, required: true, unique: true },
@@ -75,16 +67,17 @@ export default mongoose.model("users", new mongoose.Schema({
     nickname: { type: String, unique: true },
     authProvider: { type: String, required: true },
     isSeller: { type: Boolean, default: false },
-    recentHistory: [String],
     chatroomList: [Number],
-    profileImageUrl: { type: String, default: "" },
-    longitude: { type: Number, default: -1 },
-    latitude: { type: Number, default: -1 },
+    profileImg: { type: String, default: "" },
     followers: [String],
     following: [String],
     posts: [Number],
     likes: [Number],
-    deviceToken: { type: String, default: "" }
+    deviceToken: { type: String, default: "" },
+    location: {
+        type: pointSchema,
+        index: "2dsphere"
+    }
 }, {
     timestamps: true
 }));

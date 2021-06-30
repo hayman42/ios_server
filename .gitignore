@@ -1,5 +1,5 @@
 node_modules
 .env
 static
-test.js
 *.p8
+practice.js

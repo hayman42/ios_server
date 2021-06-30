@@ -1,7 +1,8 @@
 <script>
     document.cookie = "token=test";
     function setcookie(id) {
-        document.cookie = `email=${document.getElementsById(id).value}`;
+        document.cookie = `email=${document.getElementById(id).value}`;
+        console.log(document.cookie);
     }
 </script>
 
@@ -38,6 +39,17 @@
     <input name="postid" placeholder="postid">
     <input name="email" placeholder="email" id="2" onkeyup="setcookie('2')">
     <button type="submit" class="btn btn-primary">Delete</button>
+</form>
+
+<h3>update user</h3>
+<form action="/api/v0/user/update" enctype="multipart/form-data" method="post">
+    <input name="email" placeholder="email" id="3" onkeyup="setcookie('3')">
+    <input name="nickname" placeholder="nickname">
+    <input name="longitude" placeholder="longitude">
+    <input name="latitude" placeholder="latitude">
+    <input name="delete_img" placeholder="delete_img">
+    <input multiple="multiple" type="file" name="images">
+    <button type="submit" class="btn btn-primary">Update</button>
 </form>
 
 <!-- <h3>quit</h3>

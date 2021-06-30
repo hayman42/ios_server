@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import pointSchema from "./pointSchema";
 
 /** 
 * @swagger
@@ -30,17 +31,11 @@ import mongoose from "mongoose";
 *                     link:
 *                         type: string
 *                         description: 공동구매 링크
-*                     longitude:
-*                         type: number
-*                         description: 구매 위치 정보(경도)
-*                     latitude:
-*                         type: number
-*                         description: 구매 위치 정보(위도)
 *                     needPeople:
 *                         type: integer
 *                         description: 희망 참여인원
 *                     price:
-*                         type: number
+*                         type: integer
 *                         description: 가격
 *                     category:
 *                         type: string
@@ -48,12 +43,18 @@ import mongoose from "mongoose";
 *                     images:
 *                         type: file
 *                         description: 첨부 이미지
+*                     likes:
+*                         type: integer
+*                         description: 좋아요 수
 *                     tags:
 *                         type: list
 *                         description: 태그
 *                     profileImg:
 *                         type: string
 *                         description: 대표이미지 파일명
+*                     location:
+*                         type: GeoJSON Point
+*                         description: 위치 정보
 */
 export default mongoose.model("posts", new mongoose.Schema({
     postid: { type: Number, required: true, unique: true },
@@ -62,8 +63,6 @@ export default mongoose.model("posts", new mongoose.Schema({
     title: { type: String, required: true },
     content: { type: String, required: true },
     link: { type: String, required: true },
-    longitude: { type: Number },
-    latitude: { type: Number },
     view: { type: Number, required: true, default: 0 },
     nowPeople: { type: Number, required: true, default: 0 },
     needPeople: { type: Number, required: true },
@@ -72,7 +71,11 @@ export default mongoose.model("posts", new mongoose.Schema({
     images: { type: [String], required: true },
     likes: { type: Number, required: true, default: 0 },
     tags: [String],
-    profileImg: { type: String, default: null }
+    profileImg: { type: String, default: null },
+    location: {
+        type: pointSchema,
+        index: "2dsphere"
+    }
 }, {
     timestamps: true
 }));

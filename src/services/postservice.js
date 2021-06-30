@@ -17,8 +17,7 @@ export default class PostService {
             let user = await userModel.findOne({ nickname: author }).exec();
             postData.postid = counter.postid;
             postData.images = files.map(x => x.filename);
-            postData.longitude = user.longitude;
-            postData.latitude = user.latitude;
+            postData.location = user.location;
             postData.author = author;
             postData.email = user.email;
             postData.profileImg = files.find(x => x.originalname === postData.profileImg)?.filename;
@@ -62,7 +61,7 @@ export default class PostService {
     async likePost(postid, email) {
         const post = await postModel.findOne({ postid: postid }).exec();
         const user = await userModel.findOne({ email: email }).exec();
-        if (postid in user.likes)
+        if (user.likes.includes(postid))
             throw new Error("already liked");
         post.likes += 1;
         user.likes.push(postid);
@@ -71,21 +70,28 @@ export default class PostService {
         await post.save();
     }
 
-    async getRecentPosts(num) {
+    async getRecentPosts(start, num) {
+        start = parseInt(start);
         num = parseInt(num);
-        const posts = await postModel.find({}).sort("updatedAt").limit(num).exec();
+        const posts = await postModel.find({ postid: { $gt: start } }).sort("createdAt").limit(num).exec();
         return posts.slice(0, num);
     }
 
-    async getPostsByCategory(category, num) {
+    async getPostsByCategory(category, start, num) {
+        start = parseInt(start);
         num = parseInt(num);
-        const posts = await postModel.find({ category: category }).sort("updatedAt").limit(num).exec();
+        const posts = await postModel.find({
+            postid: { $gt: start },
+            category: category
+        }).sort("createdAt").limit(num).exec();
         return posts;
     }
 
-    async searchPostsByWords(str, num) {
+    async searchPostsByWords(str, start, num) {
+        start = parseInt(start);
         num = parseInt(num);
         const posts = await postModel.find({
+            postid: { $gt: start },
             $or: [
                 {
                     title: {
@@ -100,15 +106,42 @@ export default class PostService {
                     }
                 }
             ]
-        }).sort("updatedAt").limit(num).exec();
+        }).sort("createdAt").limit(num).exec();
         return posts;
     }
 
-    async getPostsByAuthor(author, num) {
+    async getPostsByAuthor(author, start, num) {
+        start = parseInt(start);
         num = parseInt(num);
         const user = await userModel.findOne({ nickname: author }).exec();
-        const posts = await postModel.find({ email: user?.email })
-            .sort("updatedAt").limit(num).exec();
+        const posts = await postModel.find({ postid: { $gt: start }, email: user?.email })
+            .sort("createdAt").limit(num).exec();
+        return posts;
+    }
+
+    async getPostsByFilter(email, start, num, min_price, max_price, min_dist, max_dist, sortby) {
+        [start, num, min_price, max_price, min_dist, max_dist] =
+            [start, num, min_price, max_price, min_dist, max_dist].map(x => parseInt(x));
+        const user = await userModel.findOne({ email: email });
+        const posts = await postModel.aggregate([
+            {
+                $geoNear: {
+                    near: user.location,
+                    distanceField: "dist",
+                    maxDistance: max_dist,
+                    minDistance: min_dist,
+                    spherical: true,
+                    key: "location"
+                }
+            },
+            {
+                $match: {
+                    $and: [
+                        { postid: { $gt: start } },
+                        { price: { $gte: min_price, $lte: max_price } }
+                    ]
+                }
+            }]).sort(sortby).limit(num).exec();
         return posts;
     }
 };
