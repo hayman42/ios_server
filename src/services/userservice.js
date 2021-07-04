@@ -45,6 +45,7 @@ export default class UserService {
         if (nickname) {
             if (await userModel.findOne({ nickname: nickname }))
                 throw new Error("nickname already exists");
+            await this.updateFollowInfo(user.nickname, nickname);
             user.nickname = nickname;
         }
         return user;
@@ -103,15 +104,34 @@ export default class UserService {
     async unfollowUser(email, nickname) {
         let user = await userModel.findOne({ email: email });
         if (!(user.following.includes(nickname))) {
-            throw new Error(` ${nickname} is not in the following list`);
+            throw new Error(`${nickname} is not in the following list`);
         }
         let friend = await userModel.findOne({ nickname: nickname });
-        const idx1 = user.following.findIndex(x => x == nickname);
-        const idx2 = friend.followers.findIndex(x => x == user.nickname);
+        const idx1 = user.following.indexOf(nickname);
+        const idx2 = friend.followers.indexOf(user.nickname);
 
         user.following.splice(idx1, 1);
         friend.followers.splice(idx2, 1);
         await user.save();
         await friend.save();
+    }
+
+    async updateFollowInfo(nickname, newname) {
+        let followedBy = await userModel.find({ following: nickname }).exec();
+        let following = await userModel.find({ followers: nickname }).exec();
+        await Promise.all(
+            followedBy.map(async user => {
+                const idx = user.following.indexOf(nickname);
+                user.following[idx] = newname;
+                await user.save();
+            })
+        );
+        await Promise.all(
+            following.map(async user => {
+                const idx = user.followers.indexOf(nickname);
+                user.followers[idx] = newname;
+                await user.save();
+            })
+        );
     }
 }

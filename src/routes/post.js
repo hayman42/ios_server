@@ -373,7 +373,8 @@ app.get("/like", authenticate, async (req, res) => {
         let { email } = req.cookies;
         await postService.likePost(postid, email);
         res.status(200)
-            .cookie("token", req.newToken);
+            .cookie("token", req.newToken)
+            .json({ msg: "ok" });
     } catch (e) {
         console.log(e.message);
         res.status(500).json({ msg: e.message });

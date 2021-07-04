@@ -64,8 +64,7 @@ app.get("/signin/:type", async (req, res) => {
             .json({
                 isNew,
                 user
-            })
-            .send();
+            });
     } catch (e) {
         console.log(e.message);
         res.status(500).json({

@@ -4,25 +4,7 @@
 - node.js
 
 ## How to
-yarn install 후 루트 디렉토리에 .env 파일을 만들어 다음과 같이 작성 후 적절한 값 입력
-
-```
-DB_USER=<DB 유저이름>
-DB_PASSWORD=<DB 암호>
-ROOT_DIR=<프로젝트 최상위 디렉토리 경로>
-GOOGLE_CID=<구글 Client ID> *optional
-GOOGLE_CSECRET=<구글 Client 암호> *optional
-KAKAO_CID=<카카오 <Client ID> *optional
-KAKAO_CSECRET=<카카오 <Client 암호> *optional
-JWT_SECRET=<JWT 비밀키>
-APN_KEY_DIR=<APN 인증키 절대 경로>
-APN_KEY_ID=<APN Key ID>
-APN_TEAM_ID=<APN Team ID>
-```
-
-optional 표시가 된 변수는 설정하실 필요가 없습니다.
-
-JWT_SECRET=test 로 할 경우 인증 과정 없이 api 가 실행되고 apn 서비스가 테스트 모드로 작동합니다.
+yarn install 후 루트 디렉토리에 .env 파일을 만들어 적절한 값 입력
 
 yarn start 로 서버 시작
 

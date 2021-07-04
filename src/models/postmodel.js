@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import pointSchema from "./pointSchema";
+import pointSchema from "./pointschema";
 
 /** 
 * @swagger

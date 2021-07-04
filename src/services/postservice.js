@@ -49,8 +49,8 @@ export default class PostService {
                 console.log(e.message);
             }
         }));
-        const postIdx = user.posts.findIndex(x => x == post.postid);
-        const likeIdx = user.likes.findIndex(x => x == post.postid);
+        const postIdx = user.posts.indexOf(post.postid);
+        const likeIdx = user.likes.indexOf(post.postid);
         user.posts.splice(postIdx, 1);
         likeIdx == -1 || user.likes.splice(likeIdx, 1);
 
